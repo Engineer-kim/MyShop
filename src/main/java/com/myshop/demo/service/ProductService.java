@@ -5,9 +5,14 @@ import com.myshop.demo.dto.ProductRequestDto;
 import com.myshop.demo.dto.ProductResponseDto;
 import com.myshop.demo.entity.Product;
 import com.myshop.demo.entity.User;
+import com.myshop.demo.entity.UserRoleEnum;
 import com.myshop.demo.naver.dto.ItemDto;
 import com.myshop.demo.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,13 +46,20 @@ public class ProductService {
         return new ProductResponseDto(product);
     }
 
-    public List<ProductResponseDto> getProduct(User user) {
-        List<Product> productList = productRepository.findAllByUser(user);
-        List<ProductResponseDto> responseDto = new ArrayList<>();
-        for (Product product : productList) {
-            responseDto.add(new ProductResponseDto(product));
+    public Page<ProductResponseDto> getProduct(User user, int page, int size, String sortBy, boolean isAsc) {
+        Sort.Direction  direction = isAsc? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        UserRoleEnum userRoleEnum = user.getRole();
+        Page<Product> productList;
+
+        if(userRoleEnum == UserRoleEnum.USER){
+            productList = productRepository.findAllByUser(user, pageable);
+        }else {
+            productList = productRepository.findAllByUser(user, pageable);
         }
-        return  responseDto;
+        return  productList.map(ProductResponseDto::new);
     }
 
     @Transactional
@@ -58,12 +70,4 @@ public class ProductService {
         product.updateByItemDto(itemDto);
     }
 
-    public List<ProductResponseDto> getAllProduct() {
-        List<Product> productList = productRepository.findAll();
-        List<ProductResponseDto> responseDto = new ArrayList<>();
-        for (Product product : productList) {
-            responseDto.add(new ProductResponseDto(product));
-        }
-        return  responseDto;
-    }
 }
