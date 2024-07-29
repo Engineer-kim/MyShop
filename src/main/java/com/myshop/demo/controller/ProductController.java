@@ -4,8 +4,10 @@ package com.myshop.demo.controller;
 import com.myshop.demo.dto.ProductMyPriceRequestDto;
 import com.myshop.demo.dto.ProductRequestDto;
 import com.myshop.demo.dto.ProductResponseDto;
+import com.myshop.demo.security.UserDetailsImpl;
 import com.myshop.demo.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,8 +21,8 @@ public class ProductController {
 
 
     @PostMapping("/products")
-    public ProductResponseDto createProduct(@RequestBody ProductRequestDto requestDto){
-        return  productService.createProduct(requestDto);
+    public ProductResponseDto createProduct(@RequestBody ProductRequestDto requestDto , @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return  productService.createProduct(requestDto , userDetails.getUser());
     }
     @PutMapping("/products/{id}")
     public ProductResponseDto updateProduct(@PathVariable Long id , @RequestBody ProductMyPriceRequestDto productMyPriceRequestDto){
@@ -28,8 +30,14 @@ public class ProductController {
     }
 
     @GetMapping("/products")
-    public List<ProductResponseDto> getProduct(){
-        return  productService.getProduct();
+    public List<ProductResponseDto> getProduct(@AuthenticationPrincipal UserDetailsImpl userDetails){
+
+        return  productService.getProduct(userDetails.getUser());
+    }
+    @GetMapping("/admin/products")
+    public List<ProductResponseDto> getAllProduct(){
+
+        return  productService.getAllProduct();
     }
 
 }
