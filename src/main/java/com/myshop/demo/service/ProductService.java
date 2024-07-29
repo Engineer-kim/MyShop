@@ -7,6 +7,7 @@ import com.myshop.demo.entity.Product;
 import com.myshop.demo.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +22,7 @@ public class ProductService {
         return new ProductResponseDto(product);
     }
 
+    @Transactional
     public ProductResponseDto updateProduct(Long id, ProductMyPriceRequestDto requestDto) {
         int myprice = requestDto.getMyprice();
         if(myprice < MIN_MY_PRICE){
@@ -30,5 +32,7 @@ public class ProductService {
         Product product = productRepository.findById(id).orElseThrow(() -> new NullPointerException("해당 상품 없음"));
 
         product.update(requestDto);
+
+        return new ProductResponseDto(product);
     }
 }
