@@ -1,5 +1,6 @@
 package com.myshop.demo.service;
 
+import com.myshop.demo.dto.ProductMyPriceRequestDto;
 import com.myshop.demo.dto.ProductRequestDto;
 import com.myshop.demo.dto.ProductResponseDto;
 import com.myshop.demo.entity.Product;
@@ -12,8 +13,22 @@ import org.springframework.stereotype.Service;
 public class ProductService {
 
     private final ProductRepository productRepository;
+
+    public static final int MIN_MY_PRICE = 100;
+
     public ProductResponseDto createProduct(ProductRequestDto requestDto) {
         Product product = productRepository.save(new Product(requestDto));
         return new ProductResponseDto(product);
+    }
+
+    public ProductResponseDto updateProduct(Long id, ProductMyPriceRequestDto requestDto) {
+        int myprice = requestDto.getMyprice();
+        if(myprice < MIN_MY_PRICE){
+            throw new IllegalArgumentException("유효하지 않는 가격입니다   "+   MIN_MY_PRICE + "이상으로 입력하시오");
+        }
+
+        Product product = productRepository.findById(id).orElseThrow(() -> new NullPointerException("해당 상품 없음"));
+
+        product.update(requestDto);
     }
 }
