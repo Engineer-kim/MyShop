@@ -3,11 +3,11 @@ package com.myshop.demo.service;
 import com.myshop.demo.dto.ProductMyPriceRequestDto;
 import com.myshop.demo.dto.ProductRequestDto;
 import com.myshop.demo.dto.ProductResponseDto;
-import com.myshop.demo.entity.Product;
-import com.myshop.demo.entity.User;
-import com.myshop.demo.entity.UserRoleEnum;
+import com.myshop.demo.entity.*;
 import com.myshop.demo.naver.dto.ItemDto;
+import com.myshop.demo.repository.FolderRepository;
 import com.myshop.demo.repository.ProductRepository;
+import com.myshop.demo.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,12 +18,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class ProductService {
 
     private final ProductRepository productRepository;
+
+    private final FolderRepository folderRepository;
 
     public static final int MIN_MY_PRICE = 100;
 
@@ -70,4 +73,23 @@ public class ProductService {
         product.updateByItemDto(itemDto);
     }
 
+    public void addFolders(Long productId, Long folderId ,User user) {
+        Product product = productRepository.findById(productId).orElseThrow(() ->
+                new NullPointerException("해당상품이 존재 하지 않음"));
+
+        Folder folder = folderRepository.findById(folderId).orElseThrow(() ->
+                new NullPointerException("해당 폴더 존재 안함"));
+
+        if(!product.getUser().getId().equals(user.getId()) ||
+        !folder.getUser().getId().equals(user.getId())){
+             throw  new IllegalArgumentException("회원님의 관심상품 아님 , 회원님 폴더가 아님");
+        }
+
+        Optional<ProductFolder> overlapFolder = productRepository.findByProductAndFolder(product, folder);
+
+        if(overlapFolder.isPresent()){
+            throw new IllegalArgumentException("중복된 폴더");
+        }
+
+    }
 }
