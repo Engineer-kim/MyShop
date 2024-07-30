@@ -1,5 +1,6 @@
 package com.myshop.demo.repository;
 
+import com.myshop.demo.dto.ProductResponseDto;
 import com.myshop.demo.entity.Folder;
 import com.myshop.demo.entity.Product;
 import com.myshop.demo.entity.ProductFolder;
@@ -18,4 +19,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
 
     Optional<ProductFolder> findByProductAndFolder(Product product, Folder folder);
+
+    Page<Product> findAllByUserAndProductFolderList_FolderId(User user, Long folderId, Pageable pageable);
 }
