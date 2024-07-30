@@ -1,11 +1,16 @@
 package com.myshop.demo.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.myshop.demo.dto.SignupRequestDto;
 import com.myshop.demo.dto.UserInfoDto;
 import com.myshop.demo.entity.UserRoleEnum;
+import com.myshop.demo.jwt.JwtUtil;
 import com.myshop.demo.security.UserDetailsImpl;
 import com.myshop.demo.service.FolderService;
+import com.myshop.demo.service.KakaoService;
 import com.myshop.demo.service.UserService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,10 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,6 +31,7 @@ public class UserController {
 
     private final UserService userService;
     private final FolderService folderService;
+    private final KakaoService kakaoService;
 
     @GetMapping("/user/login-page")
     public String loginPage() {
@@ -72,5 +75,15 @@ public class UserController {
     public String getUserinfo(Model model, @AuthenticationPrincipal UserDetailsImpl userDetails){
         model.addAttribute("folders", folderService.getFolders(userDetails.getUser()));
         return "index :: #fragment";
+    }
+
+    @GetMapping("/user/kakao/callback")
+    public String kakoLogin(@RequestParam String code , HttpServletResponse response) throws JsonProcessingException {
+        String token = kakaoService.kakaoLogin(code);
+        Cookie cookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER , token.substring(7));
+        cookie.setPath("/");
+        response.addCookie(cookie);
+
+        return "redirect:/";
     }
 }

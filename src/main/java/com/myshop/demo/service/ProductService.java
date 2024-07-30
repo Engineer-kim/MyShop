@@ -10,6 +10,7 @@ import com.myshop.demo.repository.ProductFolderRepository;
 import com.myshop.demo.repository.ProductRepository;
 import com.myshop.demo.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProductService {
 
     private final ProductRepository productRepository;
@@ -89,7 +91,11 @@ public class ProductService {
 
         Optional<ProductFolder> overlapFolder = productFolderRepository.findByProductAndFolder(product, folder);
 
+        ProductFolder productFolder = new ProductFolder();
+        productFolder.getFolder();
         if(overlapFolder.isPresent()){
+            System.out.println("=========================================hhhhhhh");
+            log.info("=========================================hhhhhhh");
             throw new IllegalArgumentException("중복된 폴더");
         }
 
