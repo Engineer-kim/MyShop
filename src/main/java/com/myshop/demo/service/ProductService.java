@@ -87,7 +87,7 @@ public class ProductService {
              throw  new IllegalArgumentException("회원님의 관심상품 아님 , 회원님 폴더가 아님");
         }
 
-        Optional<ProductFolder> overlapFolder = productRepository.findByProductAndFolder(product, folder);
+        Optional<ProductFolder> overlapFolder = productFolderRepository.findByProductAndFolder(product, folder);
 
         if(overlapFolder.isPresent()){
             throw new IllegalArgumentException("중복된 폴더");
