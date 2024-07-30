@@ -6,6 +6,7 @@ import com.myshop.demo.dto.ProductResponseDto;
 import com.myshop.demo.entity.*;
 import com.myshop.demo.naver.dto.ItemDto;
 import com.myshop.demo.repository.FolderRepository;
+import com.myshop.demo.repository.ProductFolderRepository;
 import com.myshop.demo.repository.ProductRepository;
 import com.myshop.demo.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ import java.util.Optional;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final ProductFolderRepository productFolderRepository;
 
     private final FolderRepository folderRepository;
 
@@ -90,6 +92,8 @@ public class ProductService {
         if(overlapFolder.isPresent()){
             throw new IllegalArgumentException("중복된 폴더");
         }
+
+        productFolderRepository.save(new ProductFolder(product, folder));
 
     }
 }
