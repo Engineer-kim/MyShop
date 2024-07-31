@@ -26,7 +26,7 @@ public class UseTimeAop {
     private void product() {}
     @Pointcut("execution(* com.myshop.demo.controller.FolderController.*(..))")
     private void folder() {}
-    @Pointcut("execution(* com.myshop.demo.controller.NaverApiController.*(..))")
+    @Pointcut("execution(* com.myshop.demo.naver.controller.NaverApiController.*(..))")
     private void naver() {}
 
     @Around("product() || folder() || naver()")

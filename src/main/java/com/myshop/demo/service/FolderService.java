@@ -25,7 +25,7 @@ public class FolderService {
 
         for (String folderName : foldersNames) {
             if(!isExistFolderName(folderName , existFolderList)){
-                Folder folder = new Folder();
+                Folder folder = new Folder(folderName, user);
                 folderList.add(folder);
             }else {
                 throw  new IllegalArgumentException("폴더명이 중복되었습니다");
