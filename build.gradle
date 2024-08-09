@@ -23,6 +23,11 @@ repositories {
 	mavenCentral()
 }
 
+jar{
+	enabled =false
+}
+
+
 dependencies {
 	// JWT
 	compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
